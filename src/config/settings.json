@@ -1,0 +1,37 @@
+{
+  "application": {
+    "name": "Capitec Daily Reconciliation System",
+    "version": "1.0.0",
+    "author": "Capitec Development Team"
+  },
+  "settings": {
+    "sim_multiplier": 200,
+    "bank_multiplier": 300,
+    "auto_backup": true,
+    "auto_highlight": true,
+    "auto_pdf": true,
+    "enable_audit_log": true,
+    "dark_mode": false
+  },
+  "paths": {
+    "backup_folder": "backups",
+    "report_folder": "reports",
+    "log_folder": "logs",
+    "database_folder": "database",
+    "sample_files_folder": "sample_files"
+  },
+  "database": {
+    "name": "cdrs.db",
+    "location": "database/cdrs.db"
+  },
+  "ui": {
+    "window_width": 1024,
+    "window_height": 768,
+    "window_title": "Capitec Daily Reconciliation System"
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file": "logs/cdrs.log"
+  }
+}

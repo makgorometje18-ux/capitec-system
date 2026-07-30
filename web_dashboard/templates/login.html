@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Capitec Daily Reconciliation System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
+</head>
+<body class="auth-page dark-mode">
+    <div class="auth-wrapper">
+        <!-- Left Panel: Branding -->
+        <div class="auth-brand-panel">
+            <div class="brand-content">
+                <div class="brand-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h1 class="brand-title">Capitec CDRS</h1>
+                <p class="brand-subtitle">Daily Reconciliation System</p>
+                <div class="brand-divider"></div>
+                <p class="brand-description">
+                    Streamlined workbook validation and reconciliation for Capitec's daily operations.
+                </p>
+                <div class="brand-features">
+                    <div class="brand-feature"><i class="fas fa-check-circle"></i> Automated Validation</div>
+                    <div class="brand-feature"><i class="fas fa-check-circle"></i> Real-time Monitoring</div>
+                    <div class="brand-feature"><i class="fas fa-check-circle"></i> Error Tracking</div>
+                    <div class="brand-feature"><i class="fas fa-check-circle"></i> Audit Trail</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Login Form -->
+        <div class="auth-form-panel">
+            <div class="form-content">
+                <div class="form-header-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div class="form-heading">
+                    <h2>Welcome Back!</h2>
+                    <p>Sign in to your account to continue</p>
+                </div>
+
+                <div id="loginError" class="alert alert-danger d-none" role="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="loginErrorText"></span>
+                </div>
+
+                <!-- Login Form -->
+                <div id="loginSection" class="auth-section active">
+                    <form id="loginForm">
+                        <div class="mb-4">
+                            <label class="form-label">Select Role</label>
+                            <div class="role-selector">
+                                <button type="button" class="role-card" data-role="ADMIN" onclick="selectRole('ADMIN')">
+                                    <div class="role-card-icon"><i class="fas fa-shield-alt"></i></div>
+                                    <div class="role-card-label">ADMIN</div>
+                                    <div class="role-card-desc">Full system access</div>
+                                </button>
+                                <button type="button" class="role-card" data-role="STAFF" onclick="selectRole('STAFF')">
+                                    <div class="role-card-icon"><i class="fas fa-user"></i></div>
+                                    <div class="role-card-label">STAFF</div>
+                                    <div class="role-card-desc">Standard access</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="userFields" style="display:none;">
+                            <div class="mb-3" id="usernameSection" style="display:none;">
+                                <label for="loginUsername" class="form-label">
+                                    <i class="fas fa-user"></i> Username
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    <input type="text" class="form-control" id="loginUsername" placeholder="Enter username" autocomplete="username">
+                                </div>
+                            </div>
+                            <div class="mb-3" id="passwordSection" style="display:none;">
+                                <label for="loginPassword" class="form-label">
+                                    <i class="fas fa-lock"></i> Password
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" class="form-control" id="loginPassword" placeholder="Enter password" required autocomplete="current-password">
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword" onclick="togglePasswordVisibility('loginPassword', this)">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                                    <label class="form-check-label" for="rememberMe">Remember me</label>
+                                </div>
+                                <button type="button" class="btn btn-link btn-sm p-0" onclick="showForgotPassword()">Forgot password?</button>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-auth w-100" id="loginBtn" style="display:none;">
+                                <i class="fas fa-sign-in-alt"></i> Sign In
+                            </button>
+                            <div class="text-center mt-2">
+                                <button type="button" class="btn btn-sm btn-link" onclick="cancelLogin()">
+                                    <i class="fas fa-arrow-left"></i> Back to role selection
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="auth-footer" id="roleButtons">
+                        <button class="btn-outline-auth" onclick="showManualLogin()">
+                            <i class="fas fa-keyboard"></i> Manual Login
+                        </button>
+                    </div>
+                </div>
+
+                <!-- First Login Section -->
+                <div id="firstLoginSection" class="auth-section">
+                    <div class="form-heading">
+                        <h2>First Login</h2>
+                        <p>Create your password to activate your account</p>
+                    </div>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle"></i>
+                        Your account requires a password. Please create one now.
+                    </div>
+                    <div id="firstLoginError" class="alert alert-danger d-none" role="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="firstLoginErrorText"></span>
+                    </div>
+                    <form id="firstLoginForm">
+                        <div class="mb-3">
+                            <label for="firstLoginUsername" class="form-label"><i class="fas fa-user"></i> Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" id="firstLoginUsername" required autocomplete="username">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label"><i class="fas fa-lock"></i> New Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="newPassword" required autocomplete="new-password">
+                            </div>
+                            <div class="form-text"><i class="fas fa-info-circle"></i> Min 8 characters, 1 uppercase, 1 number</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmNewPassword" class="form-label"><i class="fas fa-lock"></i> Confirm Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="confirmNewPassword" required autocomplete="new-password">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-auth w-100" id="firstLoginBtn">
+                            <i class="fas fa-check"></i> Create Password
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Forgot Password Section -->
+                <div id="forgotPasswordSection" class="auth-section">
+                    <div class="form-heading">
+                        <h2>Reset Password</h2>
+                        <p>Request a password reset link</p>
+                    </div>
+                    <div id="forgotPasswordError" class="alert alert-danger d-none" role="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="forgotPasswordErrorText"></span>
+                    </div>
+                    <div id="forgotPasswordSuccess" class="alert alert-success d-none" role="alert">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="forgotPasswordSuccessText"></span>
+                    </div>
+                    <form id="forgotPasswordForm">
+                        <div class="mb-3">
+                            <label for="forgotUsername" class="form-label"><i class="fas fa-user"></i> Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" id="forgotUsername" required autocomplete="username" placeholder="Enter username">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-auth w-100" id="forgotPasswordBtn">
+                            <i class="fas fa-paper-plane"></i> Reset Password
+                        </button>
+                    </form>
+                    <div class="auth-footer">
+                        <button class="btn btn-link" onclick="showLogin()">
+                            <i class="fas fa-arrow-left"></i> Back to Login
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Password Expired Section -->
+                <div id="passwordExpiredSection" class="auth-section">
+                    <div class="form-heading">
+                        <h2>Password Expired</h2>
+                        <p>Your password has expired. Please reset to continue.</p>
+                    </div>
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-clock"></i> For security, passwords expire every 30 days.
+                    </div>
+                    <div id="passwordExpiredError" class="alert alert-danger d-none" role="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="passwordExpiredErrorText"></span>
+                    </div>
+                    <form id="passwordExpiredForm">
+                        <div class="mb-3">
+                            <label for="expiredUsername" class="form-label"><i class="fas fa-user"></i> Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control" id="expiredUsername" required autocomplete="username">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="expiredNewPassword" class="form-label"><i class="fas fa-lock"></i> New Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="expiredNewPassword" required autocomplete="new-password">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-warning btn-auth w-100" id="passwordExpiredBtn">
+                            <i class="fas fa-sync"></i> Reset Password
+                        </button>
+                    </form>
+                </div>
+
+                <div class="auth-footer-bottom">
+                    <p class="text-muted small mb-0">
+                        <i class="fas fa-shield-alt"></i> Secure Access Only
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='auth.js') }}"></script>
+</body>
+</html>

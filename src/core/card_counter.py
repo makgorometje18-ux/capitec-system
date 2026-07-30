@@ -14,7 +14,7 @@ class CardCounter:
     multipliers (default: SIM=200, Bank=300).
     """
 
-    def __init__(self, sim_multiplier: int = 200, bank_multiplier: int = 300) -> None:
+    def __init__(self, sim_multiplier: int = 100, bank_multiplier: int = 300) -> None:
         """
         Initialize the Card Counter.
 
@@ -58,7 +58,7 @@ class CardCounter:
             for row in rows:
                 raw_card_type = row.get('Card_Type', {}).get('value') or ''
                 card_type = str(raw_card_type).strip().upper()
-                no_of_batches = row.get('No_of_Batches', {}).get('value')
+                no_of_batches = row.get('Number_of_Batches', {}).get('value')
                 try:
                     orders = int(no_of_batches)
                 except Exception:
@@ -66,9 +66,9 @@ class CardCounter:
                         orders = 0
                     else:
                         self.logger.warning(
-                            "Invalid No_of_Batches '%s' on row %s; treating as 0",
+                            "Invalid Number_of_Batches '%s' on row %s; treating as 0",
                             no_of_batches,
-                            row.get('No_of_Batches', {}).get('row')
+                            row.get('Number_of_Batches', {}).get('row')
                         )
                         orders = 0
 

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Center | Capitec Agent System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="dashboard-header">
+            <div class="header-top">
+                <div class="logo">
+                    <h1>Capitec</h1>
+                    <span class="logo-sub">Agent System</span>
+                </div>
+                <nav class="header-nav">
+                    <a href="/" class="nav-link">← Back to Dashboard</a>
+                </nav>
+            </div>
+            <h2 class="dashboard-title">Service Center Admin</h2>
+            <p class="dashboard-subtitle">Upload and validate service center transaction files</p>
+        </header>
+
+        <main class="service-center-content">
+            <div class="upload-section">
+                <div class="upload-card">
+                    <div class="upload-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                    </div>
+                    <h3 class="upload-title">Upload Transaction File</h3>
+                    <p class="upload-desc">Select a file to upload for validation (xlsx, xls, csv, pdf, doc, docx)</p>
+
+                    <form id="uploadForm" class="upload-form">
+                        <div class="file-input-wrapper">
+                            <input type="file" id="fileInput" name="file" class="file-input" required>
+                            <label for="fileInput" class="file-label">
+                                <span class="file-label-text">Choose File</span>
+                            </label>
+                            <span id="fileName" class="file-name">No file selected</span>
+                        </div>
+
+                        <div class="upload-actions">
+                            <button type="submit" id="validateBtn" class="btn btn-primary" disabled>
+                                <span class="btn-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="9 11 12 14 22 4"/>
+                                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                                    </svg>
+                                </span>
+                                Validate File
+                            </button>
+                            <button type="reset" id="resetBtn" class="btn btn-secondary">Reset</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="result-section" id="resultSection" style="display: none;">
+                <div class="result-card">
+                    <div class="result-header">
+                        <h3 class="result-title">Validation Result</h3>
+                    </div>
+                    <div class="result-body" id="resultBody">
+                        <div class="result-status" id="resultStatus"></div>
+                        <div class="result-message" id="resultMessage"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loading-section" id="loadingSection" style="display: none;">
+                <div class="loading-card">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Validating file, please wait...</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="dashboard-footer">
+            <p>&copy; 2026 Capitec Bank. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

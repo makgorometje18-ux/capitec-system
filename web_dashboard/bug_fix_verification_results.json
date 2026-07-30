@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-07-14T12:31:56.934329",
+  "summary": {
+    "total": 17,
+    "passed": 15,
+    "failed": 2,
+    "success_rate": 88.2
+  },
+  "results": [
+    {
+      "page": "/",
+      "status": "PASSED",
+      "code": 200
+    },
+    {
+      "page": "/validation",
+      "status": "PASSED",
+      "code": 200
+    },
+    {
+      "page": "/analytics",
+      "status": "PASSED",
+      "code": 200
+    },
+    {
+      "page": "/audit",
+      "status": "PASSED",
+      "code": 200
+    },
+    {
+      "page": "/summary",
+      "status": "FAILED",
+      "code": 200
+    },
+    {
+      "page": "/reports",
+      "status": "FAILED",
+      "code": 200
+    },
+    {
+      "page": "/settings",
+      "status": "PASSED",
+      "code": 200
+    },
+    {
+      "page": "/about",
+      "status": "PASSED",
+      "code": 200
+    }
+  ]
+}

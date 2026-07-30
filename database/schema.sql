@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS ValidationRun (
     Passed BOOLEAN DEFAULT 0,
     ErrorCount INTEGER DEFAULT 0,
     WarningCount INTEGER DEFAULT 0,
+    RowsProcessed INTEGER DEFAULT 0,
     UserName TEXT,
     FOREIGN KEY (WorkbookID) REFERENCES WorkbookHistory(ID)
 );
@@ -140,7 +141,7 @@ CREATE INDEX IF NOT EXISTS idx_Settings_SettingName ON Settings(SettingName);
 
 -- Insert default settings
 INSERT OR IGNORE INTO Settings (SettingName, SettingValue) VALUES
-    ('SIM_MULTIPLIER', '200'),
+    ('SIM_MULTIPLIER', '100'),
     ('BANK_MULTIPLIER', '300'),
     ('AUTO_BACKUP', 'TRUE'),
     ('AUTO_HIGHLIGHT', 'TRUE'),

@@ -10,7 +10,7 @@ from src.models.models import SummaryAnalysis
 
 def create_daily_sheet(workbook: openpyxl.Workbook, title: str, rows: list) -> None:
     worksheet = workbook.create_sheet(title)
-    headers = ['Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'No_of_Batches', 'Waybill_No', 'Batch_No', 'Bag_No']
+    headers = ['Order_no', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'Number_of_Batches', 'Waybill_Number', 'Batch_Number', 'BagNumber']
     worksheet.append(headers)
     for row in rows:
         worksheet.append(row)
@@ -33,22 +33,22 @@ def test_summary_analysis_selects_latest_daily_sheet(tmp_path):
         wb,
         'DAILY OUTPUT FILE 01-07-2026',
         [
-            [datetime(2026, 7, 1).date(), 'BR001', 'Branch A', 'SIM', 2, 'WB001', '10001|10002', "'00012345"],
+            [1, datetime(2026, 7, 1).date(), 'BR001', 'Branch A', 'SIM', 2, 'WB001', '10001|10002', "'00012345"],
         ]
     )
     create_daily_sheet(
         wb,
         'DAILY OUTPUT FILE 03-07-2026',
         [
-            [datetime(2026, 7, 3).date(), 'BR002', 'Branch B', 'DMCCLS', 1, 'WB002', '20001', "'00023456"],
-            [datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 1, 'WB003', '30001', "'00034567"],
+            [1, datetime(2026, 7, 3).date(), 'BR002', 'Branch B', 'DMCCLS', 1, 'WB002', '20001', "'00023456"],
+            [2, datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 1, 'WB003', '30001', "'00034567"],
         ]
     )
     create_daily_sheet(
         wb,
         'DAILY OUTPUT FILE 02-07-2026',
         [
-            [datetime(2026, 7, 2).date(), 'BR004', 'Branch D', 'SIM', 3, 'WB004', '40001|40002|40003', "'00045678"],
+            [1, datetime(2026, 7, 2).date(), 'BR004', 'Branch D', 'SIM', 3, 'WB004', '40001|40002|40003', "'00045678"],
         ]
     )
 
@@ -89,7 +89,7 @@ def test_summary_analysis_handles_missing_summary_sheet(tmp_path):
         wb,
         'DAILY OUTPUT FILE 03-07-2026',
         [
-            [datetime(2026, 7, 3).date(), 'BR002', 'Branch B', 'DMCCLS', 1, 'WB002', '20001', "'00023456"],
+            [1, datetime(2026, 7, 3).date(), 'BR002', 'Branch B', 'DMCCLS', 1, 'WB002', '20001', "'00023456"],
         ]
     )
     path = tmp_path / 'missing_summary.xlsx'
@@ -110,7 +110,7 @@ def test_summary_analysis_reads_existing_summary_values(tmp_path):
         wb,
         'DAILY OUTPUT FILE 03-07-2026',
         [
-            [datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
+            [1, datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
         ]
     )
     create_summary_sheet(
@@ -143,7 +143,7 @@ def test_summary_analysis_finds_summary_headers_below_title_row(tmp_path):
         wb,
         'DAILY OUTPUT FILE 03-07-2026',
         [
-            [datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
+            [1, datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
         ]
     )
 
@@ -170,8 +170,8 @@ def test_summary_analysis_models_summary_rows_and_calculates_row_updates(tmp_pat
         wb,
         'DAILY OUTPUT FILE 03-07-2026',
         [
-            [datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 3, 'WB003', '30001|30002|30003', "'00034567"],
-            [datetime(2026, 7, 3).date(), 'BR004', 'Branch D', 'DMCCLS', 2, 'WB004', '40001|40002', "'00045678"],
+            [1, datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 3, 'WB003', '30001|30002|30003', "'00034567"],
+            [2, datetime(2026, 7, 3).date(), 'BR004', 'Branch D', 'DMCCLS', 2, 'WB004', '40001|40002', "'00045678"],
         ]
     )
     worksheet = wb.create_sheet('CAPITEC SUMMARY FILE REPORT')
@@ -213,8 +213,8 @@ def test_summary_analysis_parses_formula_cells_in_summary_sheet(tmp_path):
         wb,
         'DAILY OUTPUT FILE 03-07-2026',
         [
-            [datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
-            [datetime(2026, 7, 3).date(), 'BR004', 'Branch D', 'DMCCLS', 2, 'WB004', '40001|40002', "'00045678"],
+            [1, datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
+            [2, datetime(2026, 7, 3).date(), 'BR004', 'Branch D', 'DMCCLS', 2, 'WB004', '40001|40002', "'00045678"],
         ]
     )
     worksheet = wb.create_sheet('CAPITEC SUMMARY FILE REPORT')
@@ -256,8 +256,8 @@ def test_summary_analysis_selects_active_p_row_and_ignores_history(tmp_path):
         wb,
         'DAILY OUTPUT FILE 03-07-2026',
         [
-            [datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
-            [datetime(2026, 7, 3).date(), 'BR004', 'Branch D', 'DMCCLS', 2, 'WB004', '40001|40002', "'00045678"],
+            [1, datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
+            [2, datetime(2026, 7, 3).date(), 'BR004', 'Branch D', 'DMCCLS', 2, 'WB004', '40001|40002', "'00045678"],
         ]
     )
     worksheet = wb.create_sheet('CAPITEC SUMMARY FILE REPORT')
@@ -291,8 +291,8 @@ def test_summary_analysis_selects_active_c_connect_row_and_ignores_history(tmp_p
         wb,
         'DAILY OUTPUT FILE 03-07-2026',
         [
-            [datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
-            [datetime(2026, 7, 3).date(), 'BR004', 'Branch D', 'DMCCLS', 2, 'WB004', '40001|40002', "'00045678"],
+            [1, datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
+            [2, datetime(2026, 7, 3).date(), 'BR004', 'Branch D', 'DMCCLS', 2, 'WB004', '40001|40002', "'00045678"],
         ]
     )
     worksheet = wb.create_sheet('CAPITEC SUMMARY FILE REPORT')
@@ -325,7 +325,7 @@ def test_summary_analysis_builds_preview_metadata_and_detects_mismatch(tmp_path)
         wb,
         'DAILY OUTPUT FILE 03-07-2026',
         [
-            [datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
+            [1, datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
         ]
     )
     create_summary_sheet(
@@ -360,7 +360,7 @@ def test_summary_analysis_reports_match_when_summary_values_align(tmp_path):
         wb,
         'DAILY OUTPUT FILE 03-07-2026',
         [
-            [datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
+            [1, datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
         ]
     )
     create_summary_sheet(

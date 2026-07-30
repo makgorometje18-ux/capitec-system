@@ -40,23 +40,27 @@ class ValidationResult:
         error_count: Number of errors found.
         warning_count: Number of warnings found.
         duration_seconds: Time taken for validation.
+        rows_processed: Number of Daily Output data rows processed.
         errors: List of validation error messages.
         warnings: List of validation warning messages.
         timestamp: When the validation occurred.
         steps: List of validation steps completed.
         summary: Summary statistics from the validation run.
         duplicates_found: Number of duplicate batch numbers found.
+        validation_errors: List of structured ValidationError objects.
     """
     passed: bool = False
     error_count: int = 0
     warning_count: int = 0
     duration_seconds: float = 0.0
+    rows_processed: int = 0
     errors: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
     timestamp: datetime = field(default_factory=datetime.now)
     steps: List['ValidationStep'] = field(default_factory=list)
     summary: Optional['ValidationSummary'] = None
     duplicates_found: int = 0
+    validation_errors: List['ValidationError'] = field(default_factory=list)
     
     def add_error(self, error_message: str) -> None:
         """
@@ -208,19 +212,23 @@ class ValidationError:
     
     Attributes:
         rule_id: The business rule ID that failed.
+        error_type: Categorized error type (e.g., DUPLICATE_BATCH, BLANK_FIELD).
         worksheet: Name of the worksheet with the error.
         row_number: Row number of the error.
         column_name: Name of the column with the error.
         cell_reference: Excel cell reference.
         error_message: Description of the error.
+        invalid_value: The actual value that failed validation.
         suggested_fix: Suggested action to fix the error.
     """
     rule_id: str
-    worksheet: str
-    row_number: int
-    column_name: str
-    cell_reference: str
-    error_message: str
+    error_type: str = "UNKNOWN"
+    worksheet: str = ""
+    row_number: int = 0
+    column_name: str = ""
+    cell_reference: str = ""
+    error_message: str = ""
+    invalid_value: str = ""
     suggested_fix: Optional[str] = None
 
 

@@ -1,0 +1,182 @@
+[
+  {
+    "test": "Health Check",
+    "endpoint": "/health",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:02:59.709323"
+  },
+  {
+    "test": "Home Page",
+    "endpoint": "/",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:01.751857"
+  },
+  {
+    "test": "Dashboard KPI",
+    "endpoint": "/api/dashboard/kpi",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:03.792821"
+  },
+  {
+    "test": "Recent Validations",
+    "endpoint": "/api/dashboard/recent",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:05.825566"
+  },
+  {
+    "test": "Error Breakdown",
+    "endpoint": "/api/dashboard/errors",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:07.859309"
+  },
+  {
+    "test": "Daily Trend",
+    "endpoint": "/api/dashboard/trend",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:09.891767"
+  },
+  {
+    "test": "Analytics Charts",
+    "endpoint": "/api/analytics/charts",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:11.926281"
+  },
+  {
+    "test": "Audit History",
+    "endpoint": "/api/audit/history",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:13.958267"
+  },
+  {
+    "test": "Audit History Search",
+    "endpoint": "/api/audit/history",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:15.975021"
+  },
+  {
+    "test": "Audit History Sort",
+    "endpoint": "/api/audit/history",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:18.009042"
+  },
+  {
+    "test": "Audit CSV Export",
+    "endpoint": "/api/audit/export",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:20.059468"
+  },
+  {
+    "test": "Settings GET",
+    "endpoint": "/api/settings/theme",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:22.107972"
+  },
+  {
+    "test": "Settings Save",
+    "endpoint": "/api/settings/save",
+    "method": "POST",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:24.176624"
+  },
+  {
+    "test": "Validation Page",
+    "endpoint": "/validation",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:26.207344"
+  },
+  {
+    "test": "Analytics Page",
+    "endpoint": "/analytics",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:28.225836"
+  },
+  {
+    "test": "Audit Page",
+    "endpoint": "/audit",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:30.256659"
+  },
+  {
+    "test": "Summary Page",
+    "endpoint": "/summary",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:32.274506"
+  },
+  {
+    "test": "Reports Page",
+    "endpoint": "/reports",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:34.307458"
+  },
+  {
+    "test": "Settings Page",
+    "endpoint": "/settings",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:36.340787"
+  },
+  {
+    "test": "About Page",
+    "endpoint": "/about",
+    "method": "GET",
+    "status_code": 200,
+    "success": true,
+    "details": "",
+    "timestamp": "2026-07-14T11:03:38.374147"
+  }
+]

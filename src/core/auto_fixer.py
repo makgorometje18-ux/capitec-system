@@ -15,7 +15,7 @@ class AutoFixer:
     Automatically fixes common validation issues in Excel workbooks.
     
     Currently supports:
-    - Auto-fix extra leading apostrophes in Bag_No values
+    - Auto-fix extra leading apostrophes in BagNumber values
     """
     
     def __init__(self):
@@ -55,7 +55,7 @@ class AutoFixer:
         """
         Auto-fix bag numbers with extra leading apostrophes.
         
-        Business Rule BR007: Bag_No should contain exactly one leading apostrophe.
+        Business Rule BR007: BagNumber should contain exactly one leading apostrophe.
         This method fixes values with multiple apostrophes (e.g., ''00004567 → '00004567).
         
         Args:
@@ -72,7 +72,7 @@ class AutoFixer:
             worksheet = self.workbook[sheet_name]
             fixes = 0
             
-            # Find Bag_No column header
+            # Find BagNumber column header
             bag_no_col = None
             headers = []
             
@@ -80,16 +80,18 @@ class AutoFixer:
                 if cell.value:
                     headers.append((col_idx, str(cell.value).strip()))
             
+            # Normalized comparison
             for col_idx, header in headers:
-                if header == "Bag_No":
+                normalized = str(header).strip().lower().replace(' ', '_')
+                if normalized == 'bagnumber':
                     bag_no_col = col_idx
                     break
             
             if not bag_no_col:
-                self.logger.warning(f"Bag_No column not found in {sheet_name}")
+                self.logger.warning(f"BagNumber column not found in {sheet_name}")
                 return True, 0
             
-            # Fix values in Bag_No column
+            # Fix values in BagNumber column
             for row_idx in range(2, worksheet.max_row + 1):
                 cell = worksheet.cell(row=row_idx, column=bag_no_col)
                 if cell.value:
@@ -99,11 +101,11 @@ class AutoFixer:
                     if fixed_value != value:
                         cell.value = fixed_value
                         fixes += 1
-                        self.logger.debug(f"Fixed Bag_No at row {row_idx}: '{value}' → '{fixed_value}'")
+                        self.logger.debug(f"Fixed BagNumber at row {row_idx}: '{value}' → '{fixed_value}'")
             
             self.changes_made += fixes
             if fixes > 0:
-                self.logger.info(f"Fixed {fixes} Bag_No values in {sheet_name}")
+                self.logger.info(f"Fixed {fixes} BagNumber values in {sheet_name}")
             
             return True, fixes
             

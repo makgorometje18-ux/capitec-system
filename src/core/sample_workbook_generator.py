@@ -24,8 +24,8 @@ def create_valid_daily_output_workbook() -> Workbook:
     
     # Create headers
     headers = [
-        'Order_No', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type',
-        'No_of_Batches', 'Waybill_No', 'Batch_No', 'Bag_No'
+        'Order_no', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type',
+        'Number_of_Batches', 'Waybill_Number', 'Batch_Number', 'BagNumber'
     ]
     ws.append(headers)
     
@@ -75,8 +75,8 @@ def create_invalid_daily_output_workbook() -> Workbook:
     
     # Create headers
     headers = [
-        'Order_No', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type',
-        'No_of_Batches', 'Waybill_No', 'Batch_No', 'Bag_No'
+        'Order_no', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type',
+        'Number_of_Batches', 'Waybill_Number', 'Batch_Number', 'BagNumber'
     ]
     ws.append(headers)
     
@@ -95,13 +95,13 @@ def create_invalid_daily_output_workbook() -> Workbook:
         # Row 3: Duplicate batch number in same cell (10001 appears twice)
         [2, datetime.now().date(), 'BR002', 'Branch Pretoria', 'DMCCLS', 2, 'WB002', '20001|20001', "'00002345"],
         
-        # Row 4: No_of_Batches mismatch (says 3 but only has 2 batches)
+        # Row 4: Number_of_Batches mismatch (says 3 but only has 2 batches)
         [3, datetime.now().date(), 'BR003', 'Branch Cape Town', 'SIM', 3, 'WB003', '30001|30002', "'00003456"],
         
-        # Row 5: Invalid Bag_No format (double apostrophe)
+        # Row 5: Invalid BagNumber format (double apostrophe)
         [4, datetime.now().date(), 'BR004', 'Branch Durban', 'SIM', 1, 'WB004', '40001', "''00004567"],
         
-        # Row 6: Blank Batch_No
+        # Row 6: Blank Batch_Number
         [5, datetime.now().date(), 'BR005', 'Branch Bloemfontein', 'DMCCLS', 1, 'WB005', '', "'00005678"],
         
         # Row 7: Duplicate across rows (30001 also in row 4)

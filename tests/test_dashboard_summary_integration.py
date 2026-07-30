@@ -21,7 +21,7 @@ def test_summary_analysis_to_updater_integration(tmp_path):
     ws_summary.append(['Total Cards', 200, None, None, ''])
 
     ws_daily = wb.create_sheet('DAILY OUTPUT FILE 03-07-2026')
-    daily_headers = ['Order_No', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'No_of_Batches', 'Waybill_No', 'Batch_No', 'Bag_No']
+    daily_headers = ['Order_no', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'Number_of_Batches', 'Waybill_Number', 'Batch_Number', 'BagNumber']
     ws_daily.append(daily_headers)
     ws_daily.append([1, '2026-07-03', 'BR003', 'Branch C', 'SIM', 1, 'WB003', '30001|30002|30003|30004|30005', "'00034567"])
 

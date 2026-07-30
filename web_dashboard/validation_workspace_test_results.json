@@ -1,0 +1,207 @@
+{
+  "timestamp": "2026-07-14 12:09:23",
+  "summary": {
+    "total": 28,
+    "passed": 27,
+    "failed": 1,
+    "success_rate": 96.4
+  },
+  "tests": [
+    {
+      "name": "1.1 | Validation Page Route",
+      "status": "PASSED",
+      "message": "Validation page renders correctly",
+      "response_code": 200,
+      "timestamp": "2026-07-14T12:09:25.911685"
+    },
+    {
+      "name": "1.2 | Validation Workspace header",
+      "status": "FAILED",
+      "message": "Missing: validation-workspace",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:25.912004"
+    },
+    {
+      "name": "1.2 | Drag-and-drop upload zone",
+      "status": "PASSED",
+      "message": "Element 'uploadZone' found",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:25.912164"
+    },
+    {
+      "name": "1.2 | Workbook info panel",
+      "status": "PASSED",
+      "message": "Element 'workbookInfoPanel' found",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:25.912212"
+    },
+    {
+      "name": "1.2 | Validate button",
+      "status": "PASSED",
+      "message": "Element 'validateBtn' found",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:25.912250"
+    },
+    {
+      "name": "1.2 | Progress section",
+      "status": "PASSED",
+      "message": "Element 'validationProgressSection' found",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:25.912281"
+    },
+    {
+      "name": "1.2 | Summary cards section",
+      "status": "PASSED",
+      "message": "Element 'validationSummarySection' found",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:25.912394"
+    },
+    {
+      "name": "1.2 | Error table section",
+      "status": "PASSED",
+      "message": "Element 'errorDetailsSection' found",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:25.912515"
+    },
+    {
+      "name": "1.2 | Download section",
+      "status": "PASSED",
+      "message": "Element 'downloadSection' found",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:25.912554"
+    },
+    {
+      "name": "2.1 | Upload Endpoint",
+      "status": "PASSED",
+      "message": "/api/validate/upload is accessible",
+      "response_code": 200,
+      "timestamp": "2026-07-14T12:09:27.925106"
+    },
+    {
+      "name": "2.2 | Health Check",
+      "status": "PASSED",
+      "message": "Backend available",
+      "response_code": 200,
+      "timestamp": "2026-07-14T12:09:29.965046"
+    },
+    {
+      "name": "2.3 | Dashboard KPI",
+      "status": "PASSED",
+      "message": "KPI metrics returned",
+      "response_code": 200,
+      "timestamp": "2026-07-14T12:09:32.013642"
+    },
+    {
+      "name": "3.1 | Test File Found",
+      "status": "PASSED",
+      "message": "Using: sample_invalid.xlsx",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:32.014259"
+    },
+    {
+      "name": "3.2 | File Upload",
+      "status": "PASSED",
+      "message": "File uploaded and validated",
+      "response_code": 200,
+      "timestamp": "2026-07-14T12:09:34.220238"
+    },
+    {
+      "name": "3.3 | Validation Result Returned",
+      "status": "PASSED",
+      "message": "Status: FAIL",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:34.220336"
+    },
+    {
+      "name": "3.4 | Error Count",
+      "status": "PASSED",
+      "message": "Errors: 7",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:34.220363"
+    },
+    {
+      "name": "3.5 | Duration Returned",
+      "status": "PASSED",
+      "message": "Processing time: 0.07s",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:34.220412"
+    },
+    {
+      "name": "4.1 | Table: WorkbookHistory",
+      "status": "PASSED",
+      "message": "Table exists",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:34.242001"
+    },
+    {
+      "name": "4.1 | Table: ValidationRun",
+      "status": "PASSED",
+      "message": "Table exists",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:34.242117"
+    },
+    {
+      "name": "4.1 | Table: ValidationError",
+      "status": "PASSED",
+      "message": "Table exists",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:34.242145"
+    },
+    {
+      "name": "4.1 | Table: DuplicateRecord",
+      "status": "PASSED",
+      "message": "Table exists",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:34.242167"
+    },
+    {
+      "name": "4.1 | Table: AuditLog",
+      "status": "PASSED",
+      "message": "Table exists",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:34.242194"
+    },
+    {
+      "name": "4.2 | Validation Run Persisted",
+      "status": "PASSED",
+      "message": "Validation run records: 9",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:34.242772"
+    },
+    {
+      "name": "4.3 | Audit Log Entry",
+      "status": "PASSED",
+      "message": "Audit log entries: 81",
+      "response_code": null,
+      "timestamp": "2026-07-14T12:09:34.242887"
+    },
+    {
+      "name": "5.1 | Recent Validations",
+      "status": "PASSED",
+      "message": "Recent validations: 9 records",
+      "response_code": 200,
+      "timestamp": "2026-07-14T12:09:36.286239"
+    },
+    {
+      "name": "5.2 | Error Breakdown",
+      "status": "PASSED",
+      "message": "Error types: 6",
+      "response_code": 200,
+      "timestamp": "2026-07-14T12:09:38.335769"
+    },
+    {
+      "name": "5.3 | Trend Data",
+      "status": "PASSED",
+      "message": "Trend data points: 2",
+      "response_code": 200,
+      "timestamp": "2026-07-14T12:09:40.368721"
+    },
+    {
+      "name": "6.1 | Audit CSV Export",
+      "status": "PASSED",
+      "message": "CSV export available",
+      "response_code": 200,
+      "timestamp": "2026-07-14T12:09:42.419563"
+    }
+  ]
+}

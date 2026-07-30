@@ -19,13 +19,13 @@ def create_previous_workbook(path: Path, batches: list, sheet_name: str = None):
     sheet_name = sheet_name or "DAILY OUTPUT FILE 01-07-2026"
     ws = wb.active
     ws.title = sheet_name
-    # Create simple headers with Batch_No in column H (but header lookup uses name only)
-    headers = ["Order_No", "Order_Creation_Date", "Branch_Code", "Branch_Name", "Card_Type", "No_of_Batches", "Waybill_No", "Batch_No", "Bag_No"]
+    # Create simple headers with Batch_Number in column H (but header lookup uses name only)
+    headers = ["Order_no", "Order_Creation_Date", "Branch_Code", "Branch_Name", "Card_Type", "Number_of_Batches", "Waybill_Number", "Batch_Number", "BagNumber"]
     for col_idx, h in enumerate(headers, start=1):
         ws.cell(row=1, column=col_idx).value = h
     
     for i, batch in enumerate(batches, start=2):
-        # Put batch in Batch_No column (8th column) and align with the new header set
+        # Put batch in Batch_Number column (8th column) and align with the new header set
         ws.cell(row=i, column=1).value = i - 1
         ws.cell(row=i, column=2).value = 2026
         ws.cell(row=i, column=3).value = 4000 + i

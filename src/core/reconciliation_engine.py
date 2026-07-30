@@ -117,7 +117,7 @@ class ReconciliationEngine:
             for row in rows:
                 raw_card_type = row.get('Card_Type', {}).get('value') or ''
                 card_type = str(raw_card_type).strip().upper()
-                no_of_batches = row.get('No_of_Batches', {}).get('value')
+                no_of_batches = row.get('Number_of_Batches', {}).get('value')
                 try:
                     orders = int(no_of_batches)
                 except Exception:
@@ -125,9 +125,9 @@ class ReconciliationEngine:
                         orders = 0
                     else:
                         self.logger.warning(
-                            "Invalid No_of_Batches '%s' on row %s; treating as 0",
+                            "Invalid Number_of_Batches '%s' on row %s; treating as 0",
                             no_of_batches,
-                            row.get('No_of_Batches', {}).get('row')
+                            row.get('Number_of_Batches', {}).get('row')
                         )
                         orders = 0
 
@@ -154,8 +154,8 @@ class ReconciliationEngine:
             self.logger.info("SIM Orders count: %d", stats.sim_orders)
             self.logger.info("Bank Orders count: %d", stats.bank_orders)
             # Log totals per request
-            self.logger.info("Total SIM Orders (sum of No_of_Batches): %d", stats.sim_orders)
-            self.logger.info("Total Bank Orders (sum of No_of_Batches): %d", stats.bank_orders)
+            self.logger.info("Total SIM Orders (sum of Number_of_Batches): %d", stats.sim_orders)
+            self.logger.info("Total Bank Orders (sum of Number_of_Batches): %d", stats.bank_orders)
 
             self.logger.info("Distinct Card_Type values found: %s", distinct_types)
             self.logger.info("Card_Type classifications: %s", {
@@ -212,9 +212,9 @@ class ReconciliationEngine:
             # Build waybill sums
             waybill_sums = {}
             for row in data_rows:
-                wb_no = row.get('Waybill_No', {}).get('value')
+                wb_no = row.get('Waybill_Number', {}).get('value')
                 card_type = clean_string(str(row.get('Card_Type', {}).get('value') or ''))
-                no_of_batches = row.get('No_of_Batches', {}).get('value')
+                no_of_batches = row.get('Number_of_Batches', {}).get('value')
                 try:
                     orders = int(no_of_batches)
                 except Exception:

@@ -50,7 +50,7 @@ def test_negative_stock_prevention(tmp_path):
 
     # Add a daily sheet with a DMCCLS entry that requests more than stock
     ws_daily = wb.create_sheet('DAILY OUTPUT FILE 03-07-2026')
-    headers2 = ['Order_No', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'No_of_Batches', 'Waybill_No', 'Batch_No', 'Bag_No']
+    headers2 = ['Order_no', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'Number_of_Batches', 'Waybill_Number', 'Batch_Number', 'BagNumber']
     ws_daily.append(headers2)
     ws_daily.append([1, '2026-07-03', 'BRX', 'Branch X', 'DMCCLS', 1, 'WBNEG', '90001', "'00000123"])
 
@@ -83,7 +83,7 @@ def test_dynamic_cconnect_batches(tmp_path):
 
     # Add a daily sheet with 1000 SIM cards to dispatch
     ws_daily = wb.create_sheet('DAILY OUTPUT FILE 03-07-2026')
-    headers2 = ['Order_No', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'No_of_Batches', 'Waybill_No', 'Batch_No', 'Bag_No']
+    headers2 = ['Order_no', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'Number_of_Batches', 'Waybill_Number', 'Batch_Number', 'BagNumber']
     ws_daily.append(headers2)
     # 5 SIM orders * 200 cards/order = 1000 cards
     ws_daily.append([1, '2026-07-03', 'BRX', 'Branch X', 'SIM', 5, 'WBX', '11001|11002|11003|11004|11005', "'00000123"])

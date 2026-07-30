@@ -16,7 +16,7 @@ def create_summary_sheet(workbook: openpyxl.Workbook, rows: list) -> None:
 
 def create_daily_sheet(workbook: openpyxl.Workbook, title: str, rows: list) -> None:
     worksheet = workbook.create_sheet(title)
-    headers = ['Order_No', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'No_of_Batches', 'Waybill_No', 'Batch_No', 'Bag_No']
+    headers = ['Order_no', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'Number_of_Batches', 'Waybill_Number', 'Batch_Number', 'BagNumber']
     worksheet.append(headers)
     for row in rows:
         worksheet.append(row)

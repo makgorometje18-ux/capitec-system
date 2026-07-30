@@ -18,7 +18,7 @@ def main():
     wb = openpyxl.Workbook()
     wb.remove(wb.active)
     ws_daily = wb.create_sheet('DAILY OUTPUT FILE 03-07-2026')
-    ws_daily.append(['Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'No_of_Batches', 'Waybill_No', 'Batch_No', 'Bag_No'])
+    ws_daily.append(['Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'Number_of_Batches', 'Waybill_Number', 'Batch_Number', 'BagNumber'])
     ws_daily.append(['2026-07-03', 'BR003', 'Branch C', 'SIM', 1, 'WB003', '30001', "'00034567"])
 
     ws = wb.create_sheet('CAPITEC SUMMARY FILE REPORT')

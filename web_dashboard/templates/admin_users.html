@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Capitec CDRS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-capitec-green">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-chart-line"></i> Capitec CDRS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/users"><i class="fas fa-users"></i> Users</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/audit"><i class="fas fa-history"></i> Audit</a></li>
+                    <li class="nav-item">
+                        <form id="logoutForm" class="d-inline">
+                            <button type="submit" class="nav-link btn btn-link">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid dashboard-container">
+        <div class="dashboard-header">
+            <div class="row align-items-center mb-4">
+                <div class="col-md-6">
+                    <h1 class="mb-0"><i class="fas fa-users text-capitec-green"></i> User Management</h1>
+                    <p class="text-muted mb-0 small">Admin Panel — Manage system users and permissions</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <button class="btn btn-capitec-green" onclick="showAddUserModal()">
+                        <i class="fas fa-user-plus"></i> Add New User
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="dashboard-card card professional-shadow">
+                    <div class="card-header bg-light border-0 pt-3 pb-0">
+                        <h5 class="card-title mb-0"><i class="fas fa-list text-capitec-green"></i> All Users</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="usersLoading" class="text-center py-5">
+                            <div class="spinner-border text-capitec-green" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="text-muted mt-3">Loading users...</p>
+                        </div>
+                        
+                        <div id="usersError" class="alert alert-danger d-none" role="alert">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span id="usersErrorText"></span>
+                        </div>
+                        
+                        <div class="table-responsive" id="usersTableContainer" style="display: none;">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr class="table-light">
+                                        <th>Username</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Password Changed</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-capitec-green text-white">
+                    <h5 class="modal-title" id="userModalTitle">
+                        <i class="fas fa-user-plus"></i> Add New User
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="userModalError" class="alert alert-danger d-none" role="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="userModalErrorText"></span>
+                    </div>
+                    
+                    <form id="userModalForm">
+                        <input type="hidden" id="editUsername">
+                        <div class="mb-3">
+                            <label for="modalUsername" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="modalUsername" required>
+                            <div class="form-text">No spaces. Use underscores instead.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modalRole" class="form-label">Role</label>
+                            <select class="form-select" id="modalRole" required>
+                                <option value="Staff">Staff</option>
+                                <option value="Admin">Admin</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="passwordFieldGroup">
+                            <label for="modalPassword" class="form-label">Password</label>
+                            <input type="text" class="form-control" id="modalPassword">
+                            <div class="form-text">Leave blank to keep existing password when editing. For new users, a password is required.</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-capitec-green" onclick="saveUser()">
+                        <i class="fas fa-save"></i> Save User
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+    <script>
+        let userModal;
+        let editingUsername = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            userModal = new bootstrap.Modal(document.getElementById('userModal'));
+            loadUsers();
+            setupLogout();
+        });
+
+        function setupLogout() {
+            const logoutForm = document.getElementById('logoutForm');
+            if (logoutForm) {
+                logoutForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                    window.location.href = '/login';
+                });
+            }
+        }
+
+        async function loadUsers() {
+            const loadingDiv = document.getElementById('usersLoading');
+            const errorDiv = document.getElementById('usersError');
+            const tableContainer = document.getElementById('usersTableContainer');
+            const tableBody = document.getElementById('usersTableBody');
+
+            try {
+                const response = await fetch('/api/admin/users');
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to load users');
+                }
+
+                loadingDiv.style.display = 'none';
+                
+                if (data.length === 0) {
+                    tableContainer.style.display = 'none';
+                    return;
+                }
+
+                tableContainer.style.display = 'block';
+                tableBody.innerHTML = data.map(user => `
+                    <tr>
+                        <td><strong>${escapeHtml(user.Username)}</strong></td>
+                        <td><span class="badge ${user.Role === 'Admin' ? 'bg-danger' : 'bg-info'}">${user.Role}</span></td>
+                        <td><span class="badge bg-success">${user.AccountStatus}</span></td>
+                        <td>${formatDate(user.PasswordLastChanged)}</td>
+                        <td>${formatDate(user.CreatedAt)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="editUser('${user.Username}')" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteUser('${user.Username}')" title="Delete" ${user.Username === 'ADMIN' ? 'disabled' : ''}>
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                errorDiv.classList.remove('d-none');
+                document.getElementById('usersErrorText').textContent = error.message;
+            }
+        }
+
+        function showAddUserModal() {
+            editingUsername = null;
+            document.getElementById('userModalTitle').innerHTML = '<i class="fas fa-user-plus"></i> Add New User';
+            document.getElementById('userModalForm').reset();
+            document.getElementById('editUsername').value = '';
+            document.getElementById('passwordFieldGroup').style.display = 'block';
+            document.getElementById('userModalError').classList.add('d-none');
+            userModal.show();
+        }
+
+        async function editUser(username) {
+            editingUsername = username;
+            document.getElementById('userModalTitle').innerHTML = '<i class="fas fa-user-edit"></i> Edit User';
+            document.getElementById('editUsername').value = username;
+            document.getElementById('modalUsername').value = username;
+            document.getElementById('modalPassword').value = '';
+            document.getElementById('passwordFieldGroup').style.display = 'block';
+            document.getElementById('userModalError').classList.add('d-none');
+            userModal.show();
+        }
+
+        async function saveUser() {
+            const username = document.getElementById('modalUsername').value.trim().toUpperCase();
+            const role = document.getElementById('modalRole').value;
+            const password = document.getElementById('modalPassword').value;
+            const errorDiv = document.getElementById('userModalError');
+            const errorText = document.getElementById('userModalErrorText');
+
+            errorDiv.classList.add('d-none');
+
+            if (!username) {
+                showError(errorDiv, errorText, 'Username is required');
+                return;
+            }
+
+            const isEdit = !!editingUsername;
+            if (!isEdit && !password) {
+                showError(errorDiv, errorText, 'Password is required for new users');
+                return;
+            }
+
+            try {
+                let response;
+                if (isEdit) {
+                    response = await fetch(`/api/admin/users/${username}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ role, password })
+                    });
+                } else {
+                    response = await fetch('/api/admin/users', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password, role })
+                    });
+                }
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    userModal.hide();
+                    loadUsers();
+                    showToast(data.message || 'User saved successfully', 'success');
+                } else {
+                    showError(errorDiv, errorText, data.error || 'Failed to save user');
+                }
+            } catch (error) {
+                showError(errorDiv, errorText, 'Network error. Please try again.');
+            }
+        }
+
+        async function deleteUser(username) {
+            if (!confirm(`Are you sure you want to delete user "${username}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/admin/users/${username}`, {
+                    method: 'DELETE'
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    loadUsers();
+                    showToast(data.message || 'User deleted successfully', 'success');
+                } else {
+                    showToast(data.error || 'Failed to delete user', 'error');
+                }
+            } catch (error) {
+                showToast('Network error. Please try again.', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

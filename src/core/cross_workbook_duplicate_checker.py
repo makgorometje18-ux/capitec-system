@@ -1,7 +1,7 @@
 """
 Cross-Workbook Duplicate Checker
 
-Scans a folder of previous Daily Output workbooks and aggregates Batch_No
+Scans a folder of previous Daily Output workbooks and aggregates Batch_Number
 values to support cross-workbook duplicate detection.
 """
 from typing import Dict, List, Tuple
@@ -50,13 +50,15 @@ class CrossWorkbookDuplicateChecker:
                     if not sheet_name.startswith("DAILY OUTPUT FILE"):
                         continue
                     ws = wb[sheet_name]
-                    # find Batch_No column index in header row
+                    # find Batch_Number column index in header row
                     header_cells = list(ws[1])
                     batch_col_idx = None
                     for idx, cell in enumerate(header_cells, start=1):
-                        if cell.value and str(cell.value).strip() == 'Batch_No':
-                            batch_col_idx = idx
-                            break
+                        if cell.value:
+                            normalized = str(cell.value).strip().lower().replace(' ', '_')
+                            if normalized == 'batch_number':
+                                batch_col_idx = idx
+                                break
 
                     if not batch_col_idx:
                         continue

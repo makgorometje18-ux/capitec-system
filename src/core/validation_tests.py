@@ -73,8 +73,8 @@ def test_invalid_workbook():
     expected_error_types = [
         "Blank field",
         "Duplicate batch",
-        "No_of_Batches mismatch",
-        "Invalid Bag_No format"
+        "Number_of_Batches mismatch",
+        "Invalid BagNumber format"
     ]
     
     print("Expected error types found:")

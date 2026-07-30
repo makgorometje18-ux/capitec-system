@@ -8,7 +8,7 @@ from src.gui.dashboard import build_summary_update_preview_text
 
 def create_daily_sheet(workbook: openpyxl.Workbook, title: str, rows: list) -> None:
     worksheet = workbook.create_sheet(title)
-    headers = ['Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'No_of_Batches', 'Waybill_No', 'Batch_No', 'Bag_No']
+    headers = ['Order_no', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'Number_of_Batches', 'Waybill_Number', 'Batch_Number', 'BagNumber']
     worksheet.append(headers)
     for row in rows:
         worksheet.append(row)
@@ -30,8 +30,8 @@ def test_summary_update_preview_displays_row_updates_only(tmp_path):
         wb,
         'DAILY OUTPUT FILE 03-07-2026',
         [
-            [datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
-            [datetime(2026, 7, 3).date(), 'BR004', 'Branch D', 'DMCCLS', 1, 'WB004', '40001', "'00045678"],
+            [1, datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
+            [2, datetime(2026, 7, 3).date(), 'BR004', 'Branch D', 'DMCCLS', 1, 'WB004', '40001', "'00045678"],
         ]
     )
     create_summary_sheet(
@@ -80,8 +80,8 @@ def test_summary_update_preview_parses_formula_cells_and_alias_headers(tmp_path)
         wb,
         'DAILY OUTPUT FILE 03-07-2026',
         [
-            [datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
-            [datetime(2026, 7, 3).date(), 'BR004', 'Branch D', 'DMCCLS', 2, 'WB004', '40001|40002', "'00045678"],
+            [1, datetime(2026, 7, 3).date(), 'BR003', 'Branch C', 'SIM', 2, 'WB003', '30001|30002', "'00034567"],
+            [2, datetime(2026, 7, 3).date(), 'BR004', 'Branch D', 'DMCCLS', 2, 'WB004', '40001|40002', "'00045678"],
         ]
     )
     worksheet = wb.create_sheet('CAPITEC SUMMARY FILE REPORT')

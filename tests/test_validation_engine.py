@@ -88,11 +88,11 @@ class TestHeaderValidation:
         assert len(header_errors) == 0
 
     def test_numeric_bag_number_values_are_accepted(self, tmp_path):
-        """Test that numeric Bag_No values in Excel are accepted."""
+        """Test that numeric BagNumber values in Excel are accepted."""
         wb = openpyxl.Workbook()
         ws = wb.active
         ws.title = "DAILY OUTPUT FILE 03-07-2026"
-        headers = ['Order_No', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'No_of_Batches', 'Waybill_No', 'Batch_No', 'Bag_No']
+        headers = ['Order_no', 'Order_Creation_Date', 'Branch_Code', 'Branch_Name', 'Card_Type', 'Number_of_Batches', 'Waybill_Number', 'Batch_Number', 'BagNumber']
         ws.append(headers)
         ws.append([1, datetime.now().date(), 'BR001', 'Branch Johannesburg', 'SIM', 2, 'WB001', '10001|10002', 123456])
         path = tmp_path / "numeric_bag.xlsx"
@@ -101,7 +101,7 @@ class TestHeaderValidation:
         engine = ValidationEngine()
         result = engine.validate_complete_workbook(str(path))
 
-        bag_errors = [e for e in result.errors if "bag_no" in e.lower()]
+        bag_errors = [e for e in result.errors if "bagnumber" in e.lower()]
         assert len(bag_errors) == 0
 
 
@@ -145,7 +145,7 @@ class TestDuplicateDetection:
 
 
 class TestBatchCountValidation:
-    """Test batch count validation (No_of_Batches vs actual count)."""
+    """Test batch count validation (Number_of_Batches vs actual count)."""
     
     def test_batch_count_mismatch(self):
         """Test detecting batch count mismatches."""
@@ -153,7 +153,7 @@ class TestBatchCountValidation:
         result = engine.validate_complete_workbook("sample_files/sample_invalid.xlsx")
         
         # Invalid workbook should have batch count mismatch errors
-        batch_errors = [e for e in result.errors if "no_of_batches" in e.lower() and "mismatch" in e.lower()]
+        batch_errors = [e for e in result.errors if "number_of_batches" in e.lower() and "mismatch" in e.lower()]
         assert len(batch_errors) > 0
     
     def test_valid_batch_counts(self):
@@ -162,7 +162,7 @@ class TestBatchCountValidation:
         result = engine.validate_complete_workbook("sample_files/sample_valid.xlsx")
         
         # Valid workbook should not have batch count errors
-        batch_errors = [e for e in result.errors if "no_of_batches" in e.lower()]
+        batch_errors = [e for e in result.errors if "number_of_batches" in e.lower()]
         assert len(batch_errors) == 0
 
 
@@ -175,7 +175,7 @@ class TestBagNumberValidation:
         result = engine.validate_complete_workbook("sample_files/sample_invalid.xlsx")
         
         # Invalid workbook should have bag format errors
-        bag_errors = [e for e in result.errors if "bag_no" in e.lower() and "format" in e.lower()]
+        bag_errors = [e for e in result.errors if "bagnumber" in e.lower() and "format" in e.lower()]
         assert len(bag_errors) > 0
     
     def test_valid_bag_formats(self):
@@ -184,7 +184,7 @@ class TestBagNumberValidation:
         result = engine.validate_complete_workbook("sample_files/sample_valid.xlsx")
         
         # Valid workbook should not have bag format errors
-        bag_errors = [e for e in result.errors if "bag_no" in e.lower()]
+        bag_errors = [e for e in result.errors if "bagnumber" in e.lower()]
         assert len(bag_errors) == 0
 
 
@@ -253,7 +253,7 @@ class TestErrorSummary:
         validation_result = ValidationResult(
             passed=False,
             error_count=1,
-            errors=["Duplicate batch '10001' found in same cell at row 2, column Batch_No"],
+            errors=["Duplicate batch '10001' found in same cell at row 2, column Batch_Number"],
             warning_count=0
         )
         

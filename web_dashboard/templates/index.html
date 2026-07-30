@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capitec Daily Reconciliation System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-capitec-green">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-chart-line"></i> Capitec Daily Reconciliation System
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#" data-page="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-page="validation"><i class="fas fa-upload"></i> Validation</a></li>
+                    <li class="nav-item" id="analyticsNavItem" style="display:none;"><a class="nav-link" href="#" data-page="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+                    <li class="nav-item" id="auditNavItem" style="display:none;"><a class="nav-link" href="/audit" data-page="audit"><i class="fas fa-history"></i> Audit</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-page="settings"><i class="fas fa-cog"></i> Settings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-page="about"><i class="fas fa-info-circle"></i> About</a></li>
+                    <li class="nav-item" id="userNavItem" style="display:none;">
+                        <a class="nav-link" href="/account-settings" id="userDisplay">
+                            <i class="fas fa-user"></i> <span id="navUsername"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item" id="logoutNavItem" style="display:none;">
+                        <button class="nav-link btn btn-link" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid dashboard-container">
+        <!-- ==================== DASHBOARD PAGE ==================== -->
+        <div id="dashboard-page" class="page-content active">
+            <div class="dashboard-header">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-6">
+                        <h1 class="mb-0"><i class="fas fa-chart-line text-capitec-green"></i> Capitec Daily Reconciliation Dashboard</h1>
+                        <p class="text-muted mb-0 small">Capitec Daily Reconciliation System — Operational View</p>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="header-info">
+                            <span class="badge bg-light text-dark me-2"><i class="fas fa-calendar"></i> <span id="headerDate">--/--/--</span></span>
+                            <span class="badge bg-light text-dark me-2"><i class="fas fa-clock"></i> <span id="headerTime">--:--</span></span>
+                            <span id="dbStatusBadge" class="badge bg-success"><i class="fas fa-database"></i> Connected</span>
+                        </div>
+                        <div class="small text-muted mt-2">Last updated: <span id="lastUpdated">just now</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 1: Dashboard Status + Release Status -->
+            <div class="row mb-4">
+                <div class="col-lg-8">
+                    <div class="dashboard-card card professional-shadow h-100">
+                        <div class="card-header bg-light border-0 pt-3 pb-0">
+                            <h5 class="card-title mb-0"><i class="fas fa-info-circle text-capitec-green"></i> Workbook Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="dashboardStatusContainer">
+                                <span id="dashboardStatusBadge" class="badge bg-secondary" style="font-size: 1rem; padding: 0.5rem 1.5rem;">
+                                    <i class="fas fa-clock"></i> Waiting for Validation
+                                </span>
+                            </div>
+                            
+                            <div id="dashboardWorkbookInfoPanel" class="mt-3" style="display: none;">
+                                <div class="row g-2">
+                                    <div class="col-sm-4 text-muted small">Workbook Filename</div>
+                                    <div class="col-sm-8 fw-bold" id="currentWorkbookName">—</div>
+                                    
+                                    <div class="col-sm-4 text-muted small">Validation Date & Time</div>
+                                    <div class="col-sm-8" id="currentValidationDate">—</div>
+                                    
+                                    <div class="col-sm-4 text-muted small">Daily Output Worksheet</div>
+                                    <div class="col-sm-8" id="worksheetName">—</div>
+                                    
+                                    <div class="col-sm-4 text-muted small">Validation ID</div>
+                                    <div class="col-sm-8" id="validationId">—</div>
+                                    
+                                    <div class="col-sm-4 text-muted small">Operator</div>
+                                    <div class="col-sm-8" id="operatorName">—</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="dashboard-card card professional-shadow h-100 d-flex align-items-center justify-content-center">
+                        <div class="card-body text-center p-4">
+                            <p class="text-muted small mb-0">Profile Picture</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Business KPI Summary Cards -->
+            <div class="kpi-vertical-container mb-4">
+                <div class="kpi-card professional">
+                    <div class="kpi-header"><i class="fas fa-file-excel text-capitec-green"></i><span class="kpi-label-small">Rows Processed</span></div>
+                    <div class="kpi-value-large" id="kpiRowsProcessed">0</div>
+                    <div class="kpi-footer text-muted small">Daily Output Records</div>
+                </div>
+                <div class="kpi-card professional">
+                    <div class="kpi-header"><i class="fas fa-mobile-alt text-capitec-green"></i><span class="kpi-label-small">SIM Orders</span></div>
+                    <div class="kpi-value-large" id="kpiSimOrders">0</div>
+                    <div class="kpi-footer text-muted small">Order Count</div>
+                </div>
+                <div class="kpi-card professional">
+                    <div class="kpi-header"><i class="fas fa-sim-card text-capitec-green"></i><span class="kpi-label-small">SIM Cards</span></div>
+                    <div class="kpi-value-large" id="kpiSimCards">0</div>
+                    <div class="kpi-footer text-muted small">SIM Orders × Multiplier</div>
+                </div>
+                <div class="kpi-card professional">
+                    <div class="kpi-header"><i class="fas fa-university text-warning"></i><span class="kpi-label-small">Bank Orders</span></div>
+                    <div class="kpi-value-large" id="kpiBankOrders">0</div>
+                    <div class="kpi-footer text-muted small">Order Count</div>
+                </div>
+                <div class="kpi-card professional">
+                    <div class="kpi-header"><i class="fas fa-credit-card text-warning"></i><span class="kpi-label-small">Bank Cards</span></div>
+                    <div class="kpi-value-large" id="kpiBankCards">0</div>
+                    <div class="kpi-footer text-muted small">Bank Orders × Multiplier</div>
+                </div>
+                <div class="kpi-card professional">
+                    <div class="kpi-header"><i class="fas fa-shopping-cart text-info"></i><span class="kpi-label-small">Total Orders</span></div>
+                    <div class="kpi-value-large" id="kpiTotalOrders">0</div>
+                    <div class="kpi-footer text-muted small">SIM + Bank Orders</div>
+                </div>
+                <div class="kpi-card professional">
+                    <div class="kpi-header"><i class="fas fa-credit-card text-info"></i><span class="kpi-label-small">Total Cards</span></div>
+                    <div class="kpi-value-large" id="kpiTotalCards">0</div>
+                    <div class="kpi-footer text-muted small">SIM + Bank Cards</div>
+                </div>
+                <div class="kpi-card professional">
+                    <div class="kpi-header"><i class="fas fa-exclamation-triangle text-danger"></i><span class="kpi-label-small">Validation Errors</span></div>
+                    <div class="kpi-value-large error-text" id="kpiValidationErrors">0</div>
+                    <div class="kpi-footer text-muted small">Errors found</div>
+                </div>
+            </div>
+
+            <!-- Section 3: Live Validation Progress -->
+            <div class="dashboard-card card professional-shadow mb-4" id="progressSection" style="display: none;">
+                <div class="card-header bg-light border-0 pt-3 pb-0">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-spinner fa-spin text-capitec-green" id="progressSpinner"></i>
+                        <span id="progressTitle">Validation Progress</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress-compact mb-2">
+                        <div id="liveProgressBar" class="progress-bar-compact" style="width: 0%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small id="liveProgressStage" class="text-muted"><i class="fas fa-hourglass-start"></i> Preparing...</small>
+                        <small class="text-muted"><strong id="liveProgressPercent">0%</strong></small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Validation Status Card — Always visible (shows success or failure investigation) -->
+            <div class="dashboard-card card professional-shadow mb-4" id="validationStatusCard" style="display: none;">
+                <div class="card-header bg-light border-0 pt-3 pb-0">
+                    <h5 class="card-title mb-0" id="validationStatusCardTitle"><i class="fas fa-clipboard-check text-capitec-green"></i> Validation Status</h5>
+                </div>
+                <div class="card-body" id="validationStatusCardBody">
+                    <!-- Pass state (default) -->
+                    <div id="statusPassContent" style="display: none;">
+                        <div class="alert alert-success d-flex align-items-center" role="alert">
+                            <i class="fas fa-check-circle fa-2x me-3"></i>
+                            <div>
+                                <strong>Validation completed successfully.</strong> All validation checks have passed. The workbook is ready for release.
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="failure-detail">
+                                    <span class="text-muted small">Validation Result</span>
+                                    <h5 class="mb-0 text-success"><i class="fas fa-check-circle"></i> PASSED</h5>
+                                </div>
+                                <div class="failure-detail mt-3">
+                                    <span class="text-muted small">Workbook</span>
+                                    <p id="statusPassWorkbook" class="mb-0 fw-bold">—</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="failure-detail">
+                                    <span class="text-muted small">Release Readiness</span>
+                                    <h5 class="mb-0 text-success"><i class="fas fa-shield-alt"></i> READY FOR RELEASE</h5>
+                                </div>
+                                <div class="failure-detail mt-3">
+                                    <span class="text-muted small">Validation Date</span>
+                                    <p id="statusPassDate" class="mb-0">—</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-top">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small"><i class="fas fa-check-double text-success"></i> All checks passed — no issues detected</span>
+                                <div>
+                                    <span id="passChecklistSummary" class="badge bg-success">0 checks passed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fail state (investigation) -->
+                    <div id="statusFailContent" style="display: none;">
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                            <i class="fas fa-exclamation-circle fa-2x me-3"></i>
+                            <div>
+                                <strong>Validation failed.</strong> Review the details below to identify and resolve the issues before re-running validation.
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="failure-detail">
+                                    <span class="text-muted small">Failed Stage</span>
+                                    <h5 id="failureStage" class="mb-0">—</h5>
+                                </div>
+                                <div class="failure-detail mt-3">
+                                    <span class="text-muted small">Root Cause</span>
+                                    <p id="failureReason" class="mb-0 text-danger fw-bold">—</p>
+                                </div>
+                                <div class="failure-detail mt-3">
+                                    <span class="text-muted small">What to Fix</span>
+                                    <p id="failureGuidance" class="mb-0 small text-muted fst-italic">—</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="failure-detail">
+                                    <span class="text-muted small">Affected Rows</span>
+                                    <div id="failureRows" class="mt-1">—</div>
+                                </div>
+                                <div class="failure-detail mt-3">
+                                    <span class="text-muted small">Batch Numbers Involved</span>
+                                    <div id="failureBatchNumbers" class="mt-1">—</div>
+                                </div>
+                                <div class="failure-detail mt-3">
+                                    <span class="text-muted small">Total Errors</span>
+                                    <h5 id="failureTotalErrors" class="mb-0 text-danger">0</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-top">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-warning" style="font-size: 1rem; font-weight: 600;"><i class="fas fa-lightbulb text-warning"></i> Please check the error summary below the validation checklist for detailed information.</span>
+                            </div>
+                            <div id="failedStagesContainer" style="display: none;" class="mt-3">
+                                <h6 class="text-danger mb-2"><i class="fas fa-exclamation-circle"></i> Failed Validation Stages</h6>
+                                <ul id="failedStagesList" class="list-unstyled mb-0"></ul>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span id="failureChecklistSummary" class="badge bg-secondary">0 checks passed</span>
+                                <span id="failureErrorSummary" class="badge bg-danger">0 checks failed</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Waiting state (no validation run yet) -->
+                    <div id="statusWaitingContent">
+                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                            <i class="fas fa-info-circle fa-2x me-3"></i>
+                            <div>
+                                <strong>Awaiting validation.</strong> No validation run has been performed yet. Upload a workbook on the <strong>Validation</strong> page to begin.
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-center py-3">
+                                <i class="fas fa-hourglass-half fa-3x text-muted mb-3"></i>
+                                <p class="text-muted mb-0">Waiting for first validation run to populate status information</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5: Expandable Validation Checklist -->
+            <div class="dashboard-card card professional-shadow mb-4">
+                <div class="card-header bg-light border-0 pt-3 pb-0">
+                    <h5 class="card-title mb-0"><i class="fas fa-clipboard-check text-capitec-green"></i> Validation Checklist</h5>
+                </div>
+                <div class="card-body">
+                    <div id="checklistContainer" class="checklist-grid">
+                        <div class="text-center text-muted py-3"><i class="fas fa-inbox fa-2x mb-2"></i><p>Waiting for validation...</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 6: Errors Section (moved from Validation page) -->
+            <div id="errorDetailsSection" class="dashboard-card card professional-shadow mb-3" style="display: none;">
+                <div class="card-header bg-light border-0 pt-3 pb-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0"><i class="fas fa-exclamation-triangle text-danger"></i> Errors <span id="errorCount" class="badge bg-danger">0</span></h5>
+                        <div>
+                            <input type="text" class="form-control form-control-sm d-inline-block" id="errorSearch" placeholder="Search..." style="width: 150px;">
+                            <select class="form-select form-select-sm d-inline-block" id="errorTypeFilter" style="width: 150px;">
+                                <option value="">All Types</option>
+                                <option value="DUPLICATE">Duplicates</option>
+                                <option value="BATCH">Batch</option>
+                                <option value="BAG">Bag</option>
+                                <option value="BLANK">Blank</option>
+                                <option value="CARDTYPE">Card Type</option>
+                                <option value="HEADER">Header</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="errorSummaryContainer" style="display: none; margin-bottom: 1rem;"></div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead><tr><th style="width: 10%;">Row</th><th style="width: 20%;">Error Type</th><th style="width: 25%;">Invalid Value</th><th style="width: 45%;">Reason</th></tr></thead>
+                            <tbody id="errorTableBody"><tr><td colspan="4" class="text-center text-muted py-2">No errors found</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="mt-2 small text-muted d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-info-circle"></i> Click error type badges to filter</span>
+                        <a href="#" onclick="downloadErrorCSV(); return false;" class="text-decoration-none"><i class="fas fa-download"></i> Download CSV</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <div class="dashboard-card card professional-shadow">
+                        <div class="card-header bg-light border-0 pt-3 pb-0">
+                            <h5 class="card-title mb-0"><i class="fas fa-chart-line text-capitec-green"></i> Validation Trend (30 Days)</h5>
+                        </div>
+                        <div class="card-body"><canvas id="trendChart" height="250"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="dashboard-card card professional-shadow">
+                        <div class="card-header bg-light border-0 pt-3 pb-0">
+                            <h5 class="card-title mb-0"><i class="fas fa-exclamation-triangle text-danger"></i> Error Trend (30 Days)</h5>
+                        </div>
+                        <div class="card-body"><canvas id="errorTrendChart" height="250"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== VALIDATION WORKSPACE PAGE ==================== -->
+        <div id="validation-page" class="page-content">
+            <div class="validation-header-section mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0"><i class="fas fa-check-square"></i> Validation Workspace</h4>
+                        <small class="text-muted">Excel validation and reconciliation — upload & process</small>
+                    </div>
+                    <div id="validationStatus" class="badge badge-status" style="display: none; padding: 8px 12px; font-size: 0.9rem;">
+                        <i class="fas fa-circle-notch fa-spin"></i> Processing...
+                    </div>
+                </div>
+            </div>
+            <div class="row g-2 mb-3">
+                <div class="col-lg-6 d-flex">
+                    <div class="card validation-panel w-100">
+                        <div class="card-header-compact"><i class="fas fa-cloud-upload-alt"></i> <strong>Upload File</strong></div>
+                        <div class="card-body p-3">
+                            <div class="upload-zone" id="uploadZone">
+                                <i class="fas fa-file-excel upload-icon-small"></i>
+                                <div class="small mt-2">Drag & drop Excel file</div>
+                                <input type="file" id="fileInput" accept=".xlsx,.xlsm,.xls" style="display: none;">
+                                <button class="btn btn-sm btn-capitec-green mt-2" onclick="document.getElementById('fileInput').click()"><i class="fas fa-folder-open"></i> Browse</button>
+                                <div class="small text-muted mt-2">Max 500 MB</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-flex">
+                    <div class="card validation-panel w-100">
+                        <div class="card-header-compact"><i class="fas fa-file-alt"></i> <strong>File Information</strong></div>
+                        <div class="card-body p-3">
+                            <div id="validationNoFileSelected" class="text-center text-muted py-3"><i class="fas fa-inbox"></i><div class="small">No file selected</div></div>
+                            <div class="workbook-info-panel" data-role="workbook-info" style="display: none;">
+                                <div class="info-row"><span class="info-label">Name:</span><span class="info-value" id="workbookFileName">-</span></div>
+                                <div class="info-row"><span class="info-label">Size:</span><span class="info-value" id="workbookFileSize">-</span></div>
+                                <div class="info-row"><span class="info-label">Modified:</span><span class="info-value" id="workbookModifiedDate">-</span></div>
+                                <div class="info-row"><span class="info-label">Sheets:</span><span class="info-value" id="workbookSheetCount">-</span></div>
+                                <div class="info-row"><span class="info-label">Daily Output Worksheet:</span><span class="info-value" data-role="daily-output-file">-</span></div>
+                                <div class="info-row"><span class="info-label">Operator:</span><span class="info-value" data-role="operator">-</span></div>
+                                <button class="btn btn-sm btn-capitec-green w-100 mt-2" data-role="validate-btn" onclick="startValidation()" style="display: none;"><i class="fas fa-play"></i> Validate</button>
+                                <div id="validationCompletionSmiley" class="validation-smiley-container validation-smiley-success" style="display: none;">
+                                    <div class="smiley-bounce success-smiley">😊</div>
+                                    <div class="smiley-text success-text">✅ Validation Completed Successfully!</div>
+                                    <div class="smiley-subtext success-subtext"><i class="fas fa-chart-bar"></i> Please check results via Dashboard</div>
+                                </div>
+                                <div id="validationFailureSmiley" class="validation-smiley-container validation-smiley-failure" style="display: none;">
+                                    <div class="smiley-bounce failure-smiley">😞</div>
+                                    <div class="smiley-text failure-text">❌ Validation Failed!</div>
+                                    <div class="smiley-subtext failure-subtext"><i class="fas fa-exclamation-triangle"></i> Please fix errors and try again</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="validationProgressRow" class="row g-2 mb-3" style="display: none;">
+                <div class="col-12">
+                    <div class="card validation-panel">
+                        <div class="card-body p-3">
+                            <div class="progress-compact"><div id="validationProgressBar" class="progress-bar-compact" style="width: 0%"></div></div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <small id="validationStepText"><i class="fas fa-hourglass-start"></i> Initializing...</small>
+                                <small class="text-muted"><strong id="progressPercentage">0%</strong> • <span id="validationElapsedTime">0s</span></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Summary Cards -->
+            <div id="validationSummarySection" class="validation-summary-horizontal mb-3" style="display: none;">
+                <div class="kpi-card kpi-pass"><div class="kpi-value" id="summaryPassed">0</div><div class="kpi-label">Passed</div></div>
+                <div class="kpi-card kpi-fail"><div class="kpi-value" id="summaryFailed">0</div><div class="kpi-label">Failed</div></div>
+                <div class="kpi-card kpi-warning"><div class="kpi-value" id="summaryWarnings">0</div><div class="kpi-label">Warnings</div></div>
+                <div class="kpi-card kpi-duplicate"><div class="kpi-value" id="summaryDuplicates">0</div><div class="kpi-label">Duplicates</div></div>
+                <div class="kpi-card kpi-time"><div class="kpi-value" id="summaryProcessingTime">0s</div><div class="kpi-label">Time</div></div>
+                <div class="kpi-card kpi-cards"><div class="kpi-value" id="summaryCardsProcessed">0</div><div class="kpi-label">Cards</div></div>
+            </div>
+
+            <!-- Recent Validation History (moved from Dashboard) -->
+            <div class="dashboard-card card professional-shadow mb-4">
+                <div class="card-header bg-light border-0 pt-3 pb-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0"><i class="fas fa-history text-capitec-green"></i> Recent Validation History</h5>
+                        <span class="badge bg-secondary" id="validationCount">0 runs</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr class="table-light">
+                                    <th style="width: 13%;">Date</th>
+                                    <th style="width: 22%;">Workbook</th>
+                                    <th style="width: 8%;">Status</th>
+                                    <th style="width: 10%;">SIM Orders</th>
+                                    <th style="width: 10%;">Bank Orders</th>
+                                    <th style="width: 10%;">Total Cards</th>
+                                    <th style="width: 8%;">Errors</th>
+                                    <th style="width: 8%;">Duration</th>
+                                    <th style="width: 11%;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentValidationsTable">
+                                <tr><td colspan="9" class="text-center text-muted py-5"><i class="fas fa-spinner fa-spin me-2"></i>Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="validationCompletionSection" class="row g-2" style="display: none;">
+                <div class="col-12">
+                    <div class="card validation-panel completion-card">
+                        <div class="card-body p-3 text-center">
+                            <div id="completionMessage">
+                                <i class="fas fa-check-circle text-success" style="font-size: 2rem;"></i>
+                                <h5 class="mt-2 mb-1">Validation Complete</h5>
+                                <p class="text-muted mb-3">All validation checks finished successfully</p>
+                            </div>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="downloadValidationReport()"><i class="fas fa-file-pdf"></i> PDF</button>
+                                <button type="button" class="btn btn-sm btn-outline-info" onclick="downloadErrorCSV()"><i class="fas fa-file-csv"></i> CSV</button>
+                                <button type="button" class="btn btn-sm btn-outline-success" onclick="downloadHighlightedWorkbook()"><i class="fas fa-file-excel"></i> Workbook</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="downloadAuditLog()"><i class="fas fa-history"></i> Audit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Page -->
+        <div id="analytics-page" class="page-content">
+            <div class="page-header"><h1><i class="fas fa-chart-bar"></i> Analytics</h1><p>Detailed analysis of validation data</p></div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card dashboard-card">
+                        <div class="card-header bg-capitec-green text-white"><h5><i class="fas fa-chart-bar"></i> Error Distribution</h5></div>
+                        <div class="card-body"><canvas id="errorDistributionChart" height="300"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card dashboard-card">
+                        <div class="card-header bg-capitec-green text-white"><h5><i class="fas fa-chart-line"></i> Validation Trend</h5></div>
+                        <div class="card-body"><canvas id="validationTrendChart" height="300"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audit Page -->
+        <div id="audit-page" class="page-content">
+            <div class="page-header"><h1><i class="fas fa-history"></i> Audit History</h1><p>System activity log</p></div>
+            <div class="card dashboard-card">
+                <div class="card-header bg-capitec-green text-white">
+                    <div class="row align-items-center">
+                        <div class="col"><h5><i class="fas fa-list"></i> Audit Log</h5></div>
+                        <div class="col-auto"><input type="text" class="form-control form-control-sm" id="auditSearch" placeholder="Search..."></div>
+                        <div class="col-auto"><button class="btn btn-sm btn-light" onclick="exportAuditCSV()"><i class="fas fa-download"></i> Export CSV</button></div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead><tr><th>Date & Time</th><th>Action</th><th>User</th><th>Result</th><th>Description</th></tr></thead>
+                            <tbody id="auditTable"><tr><td colspan="5" class="text-center text-muted">Loading...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settings-page" class="page-content">
+            <div class="page-header"><h1><i class="fas fa-cog"></i> Settings</h1><p>Application configuration</p></div>
+            <div class="card dashboard-card">
+                <div class="card-header bg-capitec-green text-white"><h5><i class="fas fa-sliders-h"></i> Application Settings</h5></div>
+                <div class="card-body">
+                    <form id="settingsForm">
+                        <div class="mb-3"><label class="form-label">Theme</label><select class="form-select" id="themeSetting"><option value="Light">Light</option><option value="Dark">Dark</option></select></div>
+                        <div class="mb-3"><label class="form-label">Refresh Interval (seconds)</label><input type="number" class="form-control" id="refreshInterval" value="5" min="1" max="300"></div>
+                        <div class="mb-3"><div class="form-check"><input class="form-check-input" type="checkbox" id="autoHighlight"><label class="form-check-label" for="autoHighlight">Auto Highlight Errors</label></div></div>
+                        <div class="mb-3"><div class="form-check"><input class="form-check-input" type="checkbox" id="autoBackup"><label class="form-check-label" for="autoBackup">Auto Backup Database</label></div></div>
+                        <button type="button" class="btn btn-capitec-green" onclick="saveSettings()"><i class="fas fa-save"></i> Save Settings</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Page -->
+        <div id="about-page" class="page-content">
+            <div class="page-header"><h1><i class="fas fa-info-circle"></i> About</h1></div>
+            <div class="row">
+                <div class="col-lg-6 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-header bg-capitec-green text-white"><h5>Capitec Daily Reconciliation System (CDRS)</h5></div>
+                        <div class="card-body">
+                            <p><strong>Version:</strong> 2.0</p>
+                            <p><strong>Type:</strong> Web Dashboard</p>
+                            <p><strong>Framework:</strong> Flask + Bootstrap 5 + Chart.js</p>
+                            <p><strong>Database:</strong> SQLite</p>
+                            <p><strong>Purpose:</strong> Real-time monitoring and validation of daily reconciliation data</p>
+                            <h6 class="mt-4">Features</h6>
+                            <ul>
+                                <li>Real-time KPI monitoring</li>
+                                <li>Workbook upload and validation</li>
+                                <li>Comprehensive error tracking</li>
+                                <li>Audit log management</li>
+                                <li>Advanced analytics and reporting</li>
+                                <li>Auto-refresh dashboard (5-second intervals)</li>
+                            </ul>
+                            <h6 class="mt-4">System Status</h6>
+                            <p><span class="badge bg-success">Backend: <span id="backendStatus">Connected</span></span> <span class="badge bg-success">Database: <span id="aboutDbStatus">Online</span></span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-3">
+                    <div class="card dashboard-card h-100">
+                        <div class="card-header bg-capitec-green text-white"><h5><i class="fas fa-cog"></i> Validation Engine</h5></div>
+                        <div class="card-body text-center d-flex flex-column justify-content-center">
+                            <div class="engine-info-item mb-4">
+                                <span class="text-muted small">Version</span>
+                                <h2 id="aboutEngineVersion" class="mb-0">—</h2>
+                            </div>
+                            <div class="engine-info-item mb-4">
+                                <span class="text-muted small">Rules Loaded</span>
+                                <h2 id="aboutEngineRules" class="mb-0">—</h2>
+                            </div>
+                            <div class="engine-info-item">
+                                <span class="text-muted small">Last Executed</span>
+                                <h4 id="aboutEngineLastExecuted" class="mb-0">—</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer"><p>&copy; 2024 Capitec Daily Reconciliation System. All rights reserved.</p></footer>
+    <div id="toastContainer" class="toast-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='dashboard.js') }}?v=2"></script>
+    <script>
+        // Auth integration for dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+            setupLogout();
+        });
+
+        async function checkAuthStatus() {
+            try {
+                const response = await fetch('/api/auth/status');
+                const data = await response.json();
+                
+                if (data.authenticated) {
+                    document.getElementById('userNavItem').style.display = '';
+                    document.getElementById('logoutNavItem').style.display = '';
+                    document.getElementById('navUsername').textContent = data.username;
+                    
+                    // Show admin-only links (analytics + audit)
+                    if (data.role === 'Admin') {
+                        document.getElementById('analyticsNavItem').style.display = '';
+                        document.getElementById('auditNavItem').style.display = '';
+                    }
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        }
+
+        function setupLogout() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    await fetch('/api/auth/logout', { method: 'POST' });
+                    window.location.href = '/login';
+                });
+            }
+        }
+    </script>
+</body>
+</html>

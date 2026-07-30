@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QFont, QIcon
+from src.database.database import get_database
 
 from src.core.workbook_loader import WorkbookLoader
 from src.core.validation_engine import ValidationEngine
@@ -19,8 +20,10 @@ from src.core.error_summary_builder import ErrorSummaryBuilder
 from src.core.summary_reconciliation_engine import SummaryReconciliationEngine
 
 from src.gui.progress_dialog import ProgressDialog
+from src.gui.charts_page import ChartsPage
 from src.utils.logger import get_logger
 from src.utils.settings_manager import get_settings
+
 
 logger = get_logger()
 
@@ -98,7 +101,8 @@ class Dashboard(QMainWindow):
         self.settings = get_settings()
         self.selected_workbook: Optional[str] = None
         self.summary_analysis: Optional['SummaryAnalysis'] = None
-        self.summary_loader = None
+        
+        self.chart_window = ChartsPage()
         
         self.setWindowTitle(self.settings.get('ui.window_title', 'CDRS'))
         self.setGeometry(100, 100, 
@@ -169,9 +173,18 @@ class Dashboard(QMainWindow):
         # Action buttons
         self.start_validation_button = QPushButton("Run Integration Test")
         self.start_validation_button.setEnabled(False)
+
         self.generate_pdf_button = QPushButton("Generate PDF")
         self.generate_pdf_button.setEnabled(False)
+
         self.audit_history_button = QPushButton("Audit History")
+
+        self.charts_button = QPushButton("Charts")
+
+        # Clear Dashboard button - resets KPIs, charts, validation results
+        # Does NOT delete audit logs, database history, backups, or reports
+        self.clear_dashboard_button = QPushButton("Clear Dashboard")
+
         self.settings_button = QPushButton("Settings")
         self.about_button = QPushButton("About")
         self.exit_button = QPushButton("Exit")
@@ -240,6 +253,8 @@ class Dashboard(QMainWindow):
         buttons_layout.addWidget(self.start_validation_button)
         buttons_layout.addWidget(self.generate_pdf_button)
         buttons_layout.addWidget(self.audit_history_button)
+        buttons_layout.addWidget(self.charts_button)
+        buttons_layout.addWidget(self.clear_dashboard_button)
         buttons_layout.addWidget(self.settings_button)
         buttons_layout.addWidget(self.about_button)
         buttons_layout.addStretch()
@@ -254,6 +269,8 @@ class Dashboard(QMainWindow):
         self.start_validation_button.clicked.connect(self._on_start_validation)
         self.generate_pdf_button.clicked.connect(self._on_generate_pdf)
         self.audit_history_button.clicked.connect(self._on_audit_history)
+        self.charts_button.clicked.connect(self._on_charts)
+        self.clear_dashboard_button.clicked.connect(self._on_clear_dashboard)
         self.settings_button.clicked.connect(self._on_settings)
         self.about_button.clicked.connect(self._on_about)
         self.exit_button.clicked.connect(self._on_exit)
@@ -284,6 +301,15 @@ class Dashboard(QMainWindow):
         self.progress_bar.setValue(0)
         self.progress_label.setText("Progress: 0%")
         self._clear_integration_results()
+        
+        # Reset KPI cards so only the latest validation values are shown
+        self.sim_orders_label.setText("SIM Orders: 0")
+        self.bank_orders_label.setText("Bank Orders: 0")
+        self.sim_cards_label.setText("SIM Cards: 0")
+        self.bank_cards_label.setText("Bank Cards: 0")
+        self.errors_label.setText("Errors: 0")
+        self.warnings_label.setText("Warnings: 0")
+        
         QApplication.processEvents()
 
         try:
@@ -379,7 +405,9 @@ class Dashboard(QMainWindow):
             engine_result_duplicates = engine.get_duplicates()
             self.errors_label.setText(f"Errors: {validation_result.error_count}")
             self.warnings_label.setText(f"Warnings: {validation_result.warning_count}")
-            self.pass_fail_label.setText("Result: PASS" if validation_result.passed else "Result: FAIL")
+            
+            # Update Charts Dashboard
+            self.chart_window.update_statistics(validation_result.passed)
 
             # Build categorized error summary
             summary_builder = ErrorSummaryBuilder()
@@ -459,6 +487,14 @@ class Dashboard(QMainWindow):
             QApplication.processEvents()
             analysis_engine = SummaryReconciliationEngine()
             analysis = analysis_engine.analyze(file_path)
+            
+            # Refresh KPI cards with latest validation statistics (not cumulative)
+            self._refresh_dashboard_statistics(analysis)
+            self.logger.info(
+                f"Dashboard KPI cards updated with latest validation: "
+                f"SIM Orders={analysis.sim_orders}, Bank Orders={analysis.dmcc_orders}, "
+                f"SIM Cards={analysis.sim_cards}, Bank Cards={analysis.dmcc_cards}"
+            )
             self._update_progress(95, "Recording audit log...")
             progress_dialog.update_progress(95, "Recording audit log...")
             QApplication.processEvents()
@@ -559,6 +595,61 @@ class Dashboard(QMainWindow):
         """Handle audit history button click."""
         self.logger.info("Audit history clicked")
 
+    def _on_charts(self) -> None:
+        """Open Charts Dashboard."""
+        self.chart_window.show()
+        self.chart_window.raise_()
+        self.chart_window.activateWindow()
+
+    def _on_clear_dashboard(self) -> None:
+        """
+        Clear Dashboard - resets KPI cards, charts, validation results,
+        and recent validation panel to zero/empty state.
+        
+        Does NOT delete:
+        - Audit logs
+        - Database history
+        - Backup files
+        - Reports
+        """
+        reply = QMessageBox.question(
+            self,
+            "Clear Dashboard",
+            "This will reset all dashboard KPIs, charts, and validation results to zero.\n\n"
+            "Audit logs, database history, backups, and reports will NOT be deleted.\n\n"
+            "Continue?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+        if reply != QMessageBox.Yes:
+            return
+
+        self.logger.info("Clearing dashboard display (preserving history)")
+
+        # Reset KPI cards to zero
+        self.sim_orders_label.setText("SIM Orders: 0")
+        self.bank_orders_label.setText("Bank Orders: 0")
+        self.sim_cards_label.setText("SIM Cards: 0")
+        self.bank_cards_label.setText("Bank Cards: 0")
+        self.errors_label.setText("Errors: 0")
+        self.warnings_label.setText("Warnings: 0")
+
+        # Clear integration results panel
+        self._clear_integration_results()
+
+        # Reset status
+        self.status_label.setText("Ready")
+        self.progress_label.setText("Progress: 0%")
+        self.progress_bar.setValue(0)
+
+        # Clear Charts/KPI cards
+        self.chart_window.reset_statistics()
+
+        # Clear summary analysis
+        self.summary_analysis = None
+
+        self.logger.info("Dashboard cleared successfully")
+
     def _on_settings(self) -> None:
         """Handle settings button click."""
         self.logger.info("Settings clicked")
@@ -568,7 +659,8 @@ class Dashboard(QMainWindow):
         QMessageBox.information(
             self,
             "About CDRS",
-            "Capitec Daily Reconciliation System\\nVersion 1.0.0\\n\\n"
+            "Capitec Daily Reconciliation System\n"
+            "Version 1.0.0\n\n"
             "A production-quality Windows desktop application for automated "
             "reconciliation of Capitec Daily Output Excel workbooks."
         )

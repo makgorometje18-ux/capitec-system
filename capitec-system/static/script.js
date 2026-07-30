@@ -149,4 +149,104 @@
         }
     }
 
+    /**
+     * Payment Form Handling
+     */
+    const paymentForm = document.getElementById('paymentForm');
+    const payBtn = document.getElementById('payBtn');
+    const paymentMessage = document.getElementById('paymentMessage');
+    const cardNumber = document.getElementById('cardNumber');
+    const expiryDate = document.getElementById('expiryDate');
+    const cvv = document.getElementById('cvv');
+
+    /**
+     * Auto-format card number with spaces every 4 digits
+     */
+    if (cardNumber) {
+        cardNumber.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length > 16) value = value.slice(0, 16);
+            this.value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+        });
+    }
+
+    /**
+     * Auto-format expiry date with slash
+     */
+    if (expiryDate) {
+        expiryDate.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length > 4) value = value.slice(0, 4);
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2);
+            }
+            this.value = value;
+        });
+    }
+
+    /**
+     * Allow only digits for CVV
+     */
+    if (cvv) {
+        cvv.addEventListener('input', function() {
+            this.value = this.value.replace(/\D/g, '');
+        });
+    }
+
+    /**
+     * Handle payment form submission
+     */
+    if (paymentForm) {
+        paymentForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Show processing state
+            payBtn.disabled = true;
+            payBtn.innerHTML = '<span class="spinner-small"></span> Processing payment...';
+            paymentMessage.style.display = 'none';
+
+            // Simulate 2-second processing delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            try {
+                // Call fake payment API
+                const response = await fetch('/fake-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        card_number: cardNumber.value.replace(/\s/g, ''),
+                        expiry: expiryDate.value,
+                        cvv: cvv.value
+                    })
+                });
+
+                const data = await response.json();
+
+                // Show success message
+                paymentMessage.textContent = 'Payment Successful';
+                paymentMessage.className = 'payment-message payment-success';
+                paymentMessage.style.display = 'block';
+
+                // Reset button
+                payBtn.disabled = false;
+                payBtn.innerHTML = '<span class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v8m0 0l-3-3m3 3l3-3M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg></span> Pay Now';
+
+                // Reset form fields
+                paymentForm.reset();
+
+            } catch (error) {
+                paymentMessage.textContent = 'Payment failed. Please try again.';
+                paymentMessage.className = 'payment-message payment-error';
+                paymentMessage.style.display = 'block';
+
+                payBtn.disabled = false;
+                payBtn.innerHTML = '<span class="btn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v8m0 0l-3-3m3 3l3-3M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg></span> Pay Now';
+
+                console.error('Payment error:', error);
+            }
+        });
+    }
+
 })();

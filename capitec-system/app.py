@@ -92,6 +92,15 @@ def api_validate():
         }), 500
 
 
+@app.route('/fake-payment', methods=['POST'])
+def fake_payment():
+    """Fake payment endpoint for testing card payments"""
+    return jsonify({
+        'status': 'success',
+        'message': 'Payment processed'
+    }), 200
+
+
 @app.errorhandler(413)
 def too_large(e):
     return jsonify({
